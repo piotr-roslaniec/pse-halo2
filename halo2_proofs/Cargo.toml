@@ -52,6 +52,7 @@ backtrace = { version = "0.3", optional = true }
 ff = "0.13"
 group = "0.13"
 halo2curves = { version = "0.1.0" }
+rand = { version = "0.8.5", default-features = false, features = ["small_rng"], optional = true }
 rand_core = { version = "0.6", default-features = false }
 tracing = "0.1"
 blake2b_simd = "1" # MSRV 1.66.0
@@ -95,6 +96,7 @@ sanity-checks = []
 batch = ["rand_core/getrandom"]
 circuit-params = []
 cost-estimator = ["serde", "serde_derive"]
+mock-kzg-params = ["rand"]
 
 [lib]
 bench = false

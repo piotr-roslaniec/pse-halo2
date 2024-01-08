@@ -26,6 +26,30 @@ pub struct ParamsKZG<E: Engine> {
     pub(crate) s_g2: E::G2Affine,
 }
 
+#[cfg(feature = "mock-kzg-params")]
+impl<E: Engine> ParamsKZG<E> {
+    /// Provides a params mock that will do for all verifiers for which `<V as Verifier>::QUERY_INSTANCE` is `false`.
+    pub fn mock(k: u32) -> Self {
+        let g2 = E::G2Affine::generator();
+        let s = <E::Scalar>::random(Self::mock_rng());
+
+        Self {
+            k,
+            n: 1 << k,
+            g: vec![E::G1Affine::generator()],
+            g_lagrange: vec![],
+            g2,
+            s_g2: (g2 * s).into(),
+        }
+    }
+
+    /// Returns a pseudo-random number generator that is used for mocked parameters (i.e. `Self::mock`). This should
+    /// be used to produce the corresponding (real) parameters for key generation.
+    pub fn mock_rng() -> impl RngCore {
+        <rand::rngs::SmallRng as rand_core::SeedableRng>::from_seed([41; 32])
+    }
+}
+
 /// Umbrella commitment scheme construction for all KZG variants
 #[derive(Debug)]
 pub struct KZGCommitmentScheme<E: Engine> {
@@ -94,7 +118,7 @@ where
         }
         let n_inv = E::Scalar::from(n)
             .invert()
-            .expect("inversion should be ok for n = 1<<k");
+            .unwrap(); // ("inversion should be ok for n = 1<<k")
         let multiplier = (s.pow_vartime([n]) - E::Scalar::ONE) * n_inv;
         parallelize(&mut g_lagrange_projective, |g, start| {
             for (idx, g) in g.iter_mut().enumerate() {
