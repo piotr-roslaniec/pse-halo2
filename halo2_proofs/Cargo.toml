@@ -51,7 +51,9 @@ harness = false
 backtrace = { version = "0.3", optional = true }
 ff = "0.13"
 group = "0.13"
-halo2curves = { version = "0.1.0" }
+#halo2curves = { version = "0.1.0" }
+#halo2curves = { path = "../../halo2curves", features = ["force-u32"] }
+halo2curves = { git = "https://github.com/piotr-roslaniec/halo2curves", branch = "force-u32", features = ["force-u32"] }
 rand = { version = "0.8.5", default-features = false, features = ["small_rng"], optional = true }
 rand_core = { version = "0.6", default-features = false }
 tracing = "0.1"
